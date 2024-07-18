@@ -1,0 +1,50 @@
+local workspace = game:GetService("Workspace")
+local players = game:GetService("Players")
+local runService = game:GetService("RunService")
+
+local ballFolder = workspace.Balls
+local indicatorPart = Instance.new("Part")
+indicatorPart.Size = Vector3.new(5, 5, 5)
+indicatorPart.Anchored = true
+indicatorPart.CanCollide = false
+indicatorPart.Transparency = 1
+indicatorPart.BrickColor = BrickColor.new("Bright red")
+indicatorPart.Parent = workspace
+
+local cameraFollowEnabled = false
+
+local function updateIndicatorPosition(ball)
+    indicatorPart.Position = ball.Position
+end
+
+local function checkBalls()
+    local player = players.LocalPlayer
+    if player then
+        for _, ball in pairs(ballFolder:GetChildren()) do
+            updateIndicatorPosition(ball)
+            if cameraFollowEnabled then
+                workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position, ball.Position)
+            end
+        end
+    end
+end
+
+function toggleOn()
+    cameraFollowEnabled = true
+end
+
+function toggleOff()
+    cameraFollowEnabled = false
+end
+
+runService.Heartbeat:Connect(checkBalls)
+
+game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+    if input.KeyCode == Enum.KeyCode.P then
+        toggleOn()
+    elseif input.KeyCode == Enum.KeyCode.L then
+        toggleOff()
+    end
+end)
+
+
